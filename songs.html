@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>辣堡小也 - 个人主页</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+            text-align: center;
+            background: url('3901747304548_.pic.jpg') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(30, 60, 114, 0);
+            z-index: -1;
+        }
+        .profile-card {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            width: 80%;
+            max-width: 600px;
+            backdrop-filter: blur(5px);
+        }
+        .profile-title {
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .profile-subtitle {
+            font-size: 20px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        .clock-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        #date {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        #time {
+            font-size: 48px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .song-container {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 500px;
+            backdrop-filter: blur(5px);
+        }
+        #song-display {
+            font-size: 24px;
+            margin: 20px 0;
+            min-height: 36px;
+            font-weight: bold;
+        }
+        .song-btn {
+            background: rgb(30, 60, 114, 1);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .song-btn:hover {
+            background: #458ea0;
+            transform: translateY(-2px);
+        }
+        .song-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .song-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            display: none;
+        }
+        .song-list.show {
+            display: block;
+        }
+        .song-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        .song-item:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .toggle-list-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            margin-top: 10px;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        <div class="profile-title">辣堡小也</div>
+        <div class="profile-subtitle">温柔御姐·聊天唱歌</div>
+        
+        <div class="clock-container">
+            <div id="date"></div>
+            <div id="time"></div>
+        </div>
+    </div>
+
+    <div class="song-container">
+        <h3>我的歌曲库</h3>
+        <button class="song-btn" id="random-song-btn">随机选歌</button>
+        <div id="song-display">点击按钮随机选择歌曲</div>
+        
+        <button class="toggle-list-btn" id="toggle-list-btn">显示完整歌单</button>
+        <div class="song-list" id="song-list"></div>
+    </div>
+
+    <script>
+        // 歌曲列表数据
+        const songList = ["笼","谁","巷","喂","茧","望","爱","画","解","哪吒","嘉宾","迷宫","原谅","余味","她说","年轮","指纹","慢冷","雨天","如此","晚婚","当你","无别","够爱","无羁","当时","不怕","句号","倒数","琴师","不该","羽化","晚安","我们","红绝","舍得","悬溺","落砂","白鸽","不忘","看淡","破茧","竹石","不哭","等待","大鱼","悟空","泡沫","雨季","谓风","故梦","嚣张","画心","少年","晴天","男孩","偏爱","暖暖","走马","小半","虚拟","如愿","繁花","选择","狐言","山鬼","雨爱","小哪吒","三国恋","半壶纱","起风了","日不落","长安忆","不值得","等天晴","褪黑素","愿与愁","匿名星","小酒窝","下一秒","红玫瑰","小美满","克卜勒","安眠药","何以歌","我很忙","采茶纪","牵丝戏","锦鲤抄","东风志","差三岁","黑月光","第七年","给某某","人世间","意难平","卷珠帘","有点甜","随它吧","龙卷风","桃花诺","奔向你","我的梦","珊瑚海","明明就","小幸运","欧若拉","血如墨","狮子座","追光者","童话镇","樱花草","没有如果","此生不换","爱丫爱丫","湫兮如风","像风一样","修炼爱情","只要平凡","光的方向","光年之外","千年之恋","梦的光点","达拉崩吧","曲尽陈情","大雨将至","身骑白马","我的秘密","故里逢春","岁月神偷","飞鸟和蝉","爱人错过","匆匆那年","说散就散","就是哪吒","你的世界","一花一剑","一爱如故","我怀念的","母系社会","浪人琵琶","平凡天使","很久以后","棠梨煎雪","霜雪千年","当你老了","年少有为","陪我长大","三生三世","知否知否","梦幻诛仙","天命风流","时间煮雨","告白气球","鹿 be free","普通disco","踮起脚尖爱","淋雨一直走","隐形的翅膀","奇妙能力歌","易燃易爆炸","刚好遇见你","爱的回归线","多少的光阴","如果爱忘了","在夜里跳舞","想你时风起","背对背拥抱","摩天动物园","心中的日月","一直很安静","别问很可怕","清明上河图","新少女祈祷","手心的蔷薇","可念不可说","人儿何处归","风儿阵阵吹","燕儿翩翩飞","一样的月光","红色高跟鞋","缘分一道桥","反方向的钟","三拜红尘凉","武家坡2023","这条小鱼在乎","推开时间的门","雪落下的声音","有可能的夜晚","永不失联的爱","慢慢走慢慢爱","爱的双重魔力","就算没有如果","七秒钟的记忆","在你离开那一天","下个时空再相爱","我管不住我自己","给电影人的情书","还有什么更好的","开往早晨的午夜","父亲写的散文诗","不为谁而作的歌","多远都要在一起","白月光与朱砂痣","相爱后动物感伤","不要忘记我爱你","阿珍爱上了阿强","这世界那么多人","夜空中最亮的星","明月明月是前身","没能成为你的白马","今后我与自己流浪","我还年轻我还年轻","杀死那个石家庄人","世界上的另一个我","一个人想着一个人","女孩你为何踮脚尖","陪你度过漫长岁月","我在人民广场吃炸鸡","一个像夏天一个像秋天","我们打着光脚在风车上跑","手上的狗尾巴草摇啊摇","puma","let it go","Havana","rainbow","mascara","superstar","4ever in u","moon river","city of star","Find a way","wonderful u","Dream party","always online","Bonnie&clyde","no better feelin","Under our spell","Life is a runway","Nhan sinh quan","I'll chase the sky","The magic inside","A true, ture friend","Let's have a battle","plz come back 2 me","written in your heart","if you love me for me","You'll play your part","Welcome to the show"];
+
+        // 时钟功能
+        function updateClock() {
+            const now = new Date();
+            
+            // 格式化日期：YYYY年MM月DD日 星期X
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            const weekday = weekdays[now.getDay()];
+            
+            // 格式化时间：HH:MM:SS
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('date').textContent = `${year}年${month}月${day}日 星期${weekday}`;
+            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // 显示歌曲列表
+        const songListElement = document.getElementById('song-list');
+        songList.forEach(song => {
+            const songItem = document.createElement('div');
+            songItem.className = 'song-item';
+            songItem.textContent = song;
+            songListElement.appendChild(songItem);
+        });
+
+        // 随机选歌功能
+        document.getElementById('random-song-btn').addEventListener('click', function() {
+            const btn = this;
+            const display = document.getElementById('song-display');
+            
+            // 禁用按钮防止重复点击
+            btn.disabled = true;
+            
+            // 清空显示
+            display.textContent = "选择中...";
+            
+            // 模拟随机选择过程
+            let counter = 0;
+            const interval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * songList.length);
+                display.textContent = songList[randomIndex];
+                counter++;
+                
+                if (counter >= 10) { // 大约1秒后停止(100ms间隔)
+                    clearInterval(interval);
+                    const finalRandomIndex = Math.floor(Math.random() * songList.length);
+                    display.textContent = songList[finalRandomIndex];
+                    btn.disabled = false;
+                }
+            }, 100);
+        });
+
+        // 切换歌单显示
+        document.getElementById('toggle-list-btn').addEventListener('click', function() {
+            const list = document.getElementById('song-list');
+            if (list.classList.contains('show')) {
+                list.classList.remove('show');
+                this.textContent = '显示完整歌单';
+            } else {
+                list.classList.add('show');
+                this.textContent = '隐藏歌单';
+            }
+        });
+
+        // 初始加载
+        updateClock();
+        // 每秒更新一次时钟
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
